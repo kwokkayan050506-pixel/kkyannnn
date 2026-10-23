@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dinosaur Game</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- This is the font returned from Google font -->
+    <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+    /* Style to make the svg fit in the browser */
+    body { padding: 0; margin: 0; }
+    svg  { width: 100%; height: auto; }
+
+    /* The container moves the text to the middle of the screen */
+    #gameover-container {
+        transform: translate(500px,200px);  
+        display: none;
+    }
+    #gameover {
+        font-family: Dosis, sans-serif;
+    }
+@keyframes cloud-animation {
+  from { transform: translateX(1100px);}
+  to   { transform: translateX(-1100px); }
+}
+
+.cloud {
+    animation-name: cloud-animation;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-duration: 8s;
+    animation-play-state: running;
+}
+.cloud1 { animation-delay: -0.5s; }
+.cloud2 { animation-delay: -2.5s; }
+.cloud3 { animation-delay: -4.5s; }
+
+@keyframes obstacle-animation {
+  from { transform: translateX(1100px);}
+  to   { transform: translateX(-1100px); }
+}
+
+#obstacle {
+    animation-name: none;
+    animation-timing-function: linear;
+    animation-iteration-count: 1;
+    animation-duration: 5s;
+    display: none;
+    animation-play-state: running;
+}
+@keyframes dinosaur-animation {
+  0%   { transform: translateY(0px); }
+  50%  { transform: translateY(-180px); }
+  100% { transform: translateY(0px); }
+}
+#dinosaur {
+    animation-name: none;
+    animation-timing-function: linear;
+    animation-iteration-count: 1;
+    animation-duration: 1s;
+}
+    </style>
+    <script>
+    // Check whether the game is over if the dinosaur is near the obstacle
+    function checkGameover() {
+        const obstacleTransform = $("#obstacle").css("transform");
+        const dinosaurTransform = $("#dinosaur").css("transform");
+        let obstacle_x = null;
+        let dinosaur_y = 0;
+        if (obstacleTransform && obstacleTransform != "none")
+            obstacle_x = parseFloat(obstacleTransform.split(",")[4]);
+        if (dinosaurTransform && dinosaurTransform != "none")
+            dinosaur_y = parseFloat(dinosaurTransform.split(",")[5]);
+            // You need to keep on checking for the gameover situation here
+        if(obstacle_x != null && $("#obstacle").css("display")!= "none"){
+            const dinosaurOnGround = dinosaur_y > -30;
+            const obstacleUnderDinosaur = obstacle_x < 150 && obstacle_x +60 > 50;
+            if (dinosaurOnGround && obstacleUnderDinosaur) {
+                console.log("Game over!");
+            // Read the transform property of the dinosaur and obstacle
+                $("#obstacle").css("animation-play-state", "paused");
+                $(".cloud").css("animation-play-state", "paused");
+                $("#dinosaur").css("animation-play-state", "paused");
+                $("#gameover-container").fadeIn(800);
+                return;
+        // Extract the appropriate numbers
+            }
+        }
+        // Compare the numbers for the gameover situation
+
+        // Request to check again
+        setTimeout(checkGameover, 50);
+    }
+
+    // Make an obstacle by starting the obstacle animation
+    function makeObstacle() {
+
+        // You need to show the obstacle and start the animation here]
+        $("#obstacle").show();
+        $("#obstacle").css("animation-name", "obstacle-animation");
+
+    }
+
+    // Make the dinosaur jump by starting the dinosaur animation
+    function jump() {
+
+        // You need to start the dinosaur jumping animation here
+         $("#dinosaur").css("animation-name", "dinosaur-animation");
+    }
+
+    $(function () {
+        // Handle the spacebar key for controlling the dinosaur
+        $(document).on("keydown", function(e) {
+            // The dinosaur jumps if the spacebar key is down
+            if (e.keyCode == 32)
+                jump();
+        });
+        let obstacleDuration = 5;
+        // The obstacle animation has finished
+        $("#obstacle").on("animationend", function() {
+
+            // You need to hide the obstacle and stop the animation here
+            $("#obstacle").hide();
+            $("#obstacle").css("animation-name", "none");
+            // You will make another obstacle later
+            obstacleDuration = Math.max(1.5, obstacleDuration - 0.3);
+            $("#obstacle").css("animation-duration", obstacleDuration + "s");
+            setTimeout(makeObstacle, Math.random() * 2000);
+        });
+
+        // The dinosaur animation has finished
+        $("#dinosaur").on("animationend", function() {
+
+            // You need to stop the animation here
+             $("#dinosaur").css("animation-name", "none");
+        });
+
+        // Start the obstacle animation
+        setTimeout(makeObstacle, Math.random() * 2000);
+
+        // Start the game over checking
+        setTimeout(checkGameover, 50);
+    });
+    </script>
+</head>
+<body>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 400">
+        <defs>
+            <linearGradient id = "skyGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="skyblue"/>
+                <stop offset="100%" stop-color="lightblue"/>
+            </linearGradient>
+            <linearGradient id = "groundGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="lightgreen"/>
+                <stop offset="100%" stop-color="green"/>
+            </linearGradient>
+        </defs>
+    <rect height="400" width="1000" y="0" x="0" stroke="none" fill="url(#skyGradient)"/>
+    <rect height="100" width="1000" y="330" x="0" stroke="none" fill="url(#groundGradient)"/>
+    <g class="cloud cloud1">
+        <svg  x = "0" y = "10" width="80" height="80" viewBox="0 -4 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+        
+        <title>cloud</title>
+        <desc>Created with Sketch Beta.</desc>
+        <defs>
+
+        </defs>
+            <g id="Page-1" stroke="none" stroke-width="1" fill="white" fill-rule="evenodd" sketch:type="MSPage">
+                <g id="Icon-Set" sketch:type="MSLayerGroup" transform="translate(-517.000000, -779.000000)" fill="#FFFFFF">
+                    <path d="M539,801 L525,801 C525,801 518.963,800.381 519,795 C519.021,791.964 521.688,789.183 525,789 C525,784.858 527.65,781 532,781 C535.433,781 537.723,783.096 538.538,786.014 C543.493,785.798 546.844,789.718 547,793 C547.21,797.413 542.601,801 539,801 L539,801 Z M540.067,784.028 C538.599,781.053 535.543,779 532,779 C527.251,779 523.37,782.682 523.033,787.345 C519.542,788.34 517,791.39 517,795 C517,799.26 520.54,802.731 525,802.977 C525,802.977 538.831,803 539,803 C544.247,803 549,798.747 549,793.5 C549,788.444 545.049,784.323 540.067,784.028 L540.067,784.028 Z" id="cloud-path" sketch:type="MSShapeGroup">
+
+        </path>
+                </g>
+            </g>
+        </svg>
+    </g>
+     <g class="cloud cloud2">
+        <svg  x = "0" y = "60" width="80" height="80" viewBox="0 -4 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+        
+        <title>cloud</title>
+        <desc>Created with Sketch Beta.</desc>
+        <defs>
+
+        </defs>
+            <g id="Page-1" stroke="none" stroke-width="1" fill="white" fill-rule="evenodd" sketch:type="MSPage">
+                <g id="Icon-Set" sketch:type="MSLayerGroup" transform="translate(-517.000000, -779.000000)" fill="#FFFFFF">
+                    <path d="M539,801 L525,801 C525,801 518.963,800.381 519,795 C519.021,791.964 521.688,789.183 525,789 C525,784.858 527.65,781 532,781 C535.433,781 537.723,783.096 538.538,786.014 C543.493,785.798 546.844,789.718 547,793 C547.21,797.413 542.601,801 539,801 L539,801 Z M540.067,784.028 C538.599,781.053 535.543,779 532,779 C527.251,779 523.37,782.682 523.033,787.345 C519.542,788.34 517,791.39 517,795 C517,799.26 520.54,802.731 525,802.977 C525,802.977 538.831,803 539,803 C544.247,803 549,798.747 549,793.5 C549,788.444 545.049,784.323 540.067,784.028 L540.067,784.028 Z" id="cloud-path2" sketch:type="MSShapeGroup">
+
+        </path>
+                </g>
+            </g>
+        </svg>
+    </g>
+    <g class="cloud cloud3">
+        <svg  x = "0" y = "10" width="80" height="80" viewBox="0 -4 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+        
+        <title>cloud</title>
+        <desc>Created with Sketch Beta.</desc>
+        <defs>
+
+        </defs>
+            <g id="Page-1" stroke="none" stroke-width="1" fill="white" fill-rule="evenodd" sketch:type="MSPage">
+                <g id="Icon-Set" sketch:type="MSLayerGroup" transform="translate(-517.000000, -779.000000)" fill="#FFFFFF">
+                    <path d="M539,801 L525,801 C525,801 518.963,800.381 519,795 C519.021,791.964 521.688,789.183 525,789 C525,784.858 527.65,781 532,781 C535.433,781 537.723,783.096 538.538,786.014 C543.493,785.798 546.844,789.718 547,793 C547.21,797.413 542.601,801 539,801 L539,801 Z M540.067,784.028 C538.599,781.053 535.543,779 532,779 C527.251,779 523.37,782.682 523.033,787.345 C519.542,788.34 517,791.39 517,795 C517,799.26 520.54,802.731 525,802.977 C525,802.977 538.831,803 539,803 C544.247,803 549,798.747 549,793.5 C549,788.444 545.049,784.323 540.067,784.028 L540.067,784.028 Z" id="cloud-path3" sketch:type="MSShapeGroup">
+
+        </path>
+                </g>
+            </g>
+        </svg>
+    </g>
+    <g id="dinosaur">
+        <svg x = "50" y = "220" width="130px" height="130px" viewBox="0 0 24 24" data-name="Layer 1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"><title/><path d="M16,7,13,9V5.2071a.5.5,0,0,1,.8536-.3535Z" style="fill:#ff888b"/><path d="M18,7l3,2V5.2071a.5.5,0,0,0-.8536-.3535Z" style="fill:#ff888b"/><path d="M6,13H4V5A1,1,0,0,1,5,4H5A1,1,0,0,1,6,5Z" style="fill:#4b5661"/><path d="M5.5,22h0A1.5,1.5,0,0,1,4,20.5V13H7v7.5A1.5,1.5,0,0,1,5.5,22Z" style="fill:#4b5661"/><path d="M15.5,22h0A1.5,1.5,0,0,1,14,20.5V13h3v7.5A1.5,1.5,0,0,1,15.5,22Z" style="fill:#4b5661"/><path d="M17,19c-3-4-10-4-13,0V12c3-4,10-4,13,0Z" style="fill:#4b5661"/><path d="M17,14h0a4,4,0,0,1-4-4V7h8v3A4.00005,4.00005,0,0,1,17,14Z" style="fill:#4b5661"/><circle cx="15.25" cy="9.75" r="0.75" style="fill:#fff"/><circle cx="19" cy="9.75" r="0.75" style="fill:#fff"/></svg>
+    </g>
+    <g id="obstacle">
+        <svg x="0" y="280" width="60" height="60"
+        version="1.1" id="obstacle-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+        viewBox="0 0 511.842 511.842" xml:space="preserve">
+            <g>
+                <path style="fill:#8CC153;" d="M234.599,490.507c-0.266,10.606,95.97-4.655,181.273-191.941
+                    C415.872,298.566,238.785,318.169,234.599,490.507z"/>
+                <path style="fill:#8CC153;" d="M255.109,435.883c-3.343,29.975-97.689,13.871-159.139-168.277
+                    C95.97,267.606,266.526,333.57,255.109,435.883z"/>
+            </g>
+            <rect x="234.601" y="266.012" style="fill:#A0D468;" width="21.322" height="245.83"/>
+            <path style="fill:#C15F9E;" d="M351.001,184.834c0,51.031-47.345,92.41-105.749,92.41s-105.733-41.379-105.733-92.41
+                C139.519,133.787,192.378,0,245.252,0C298.126,0,351.001,133.787,351.001,184.834z"/>
+            <path style="fill:#D770AD;" d="M338.88,141.863c27.133,45.205,7.201,101.062-44.502,124.79
+                c-51.719,23.712-115.637,6.295-142.785-38.895c-27.132-45.205-51.438-185.146-4.624-206.625
+                C193.783-0.328,311.732,96.674,338.88,141.863z"/>
+            <path style="fill:#EC87C0;" d="M151.64,141.863c-27.132,45.205-7.217,101.062,44.502,124.79
+                c51.719,23.712,115.636,6.295,142.769-38.895c27.148-45.205,51.453-185.146,4.639-206.625
+                C296.721-0.328,178.773,96.674,151.64,141.863z"/>
+        </svg>
+    </g>
+        <!-- The game over text -->
+        <g id="gameover-container">
+            <text id="gameover" x="0" y="0" fill="red"
+                  font-size="80px" text-anchor="middle">Game Over</text>
+        </g>
+    </svg>
+</html>

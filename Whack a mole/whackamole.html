@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Whack-a-Mole</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+    let timeRemaining = 3;          // Amount of time remaining for the countdown
+
+    let timeToShowMole = 2000;      // Amount of time to show the mole
+    let timeToHideMole = 2000;      // Amount of time to hide the mole
+
+    let hideMoleTimeout;            // Timeout id for hiding the mole
+
+    let life = 3;                   // The player's life
+
+    function hideMole() {
+        // Change the life and the colour of the holes
+        life --;
+        if(life == 2)
+            $(".hole").css("border-color", "yellow");
+        if(life == 1)
+            $(".hole").css("border-color", "red");
+        // If the game is over show the game over screen
+        if(life == 0){
+            $("#gameover").slideDown();
+            return;
+        }
+        // Hide the mole
+        $("#mole").hide();
+        setTimeout(showMole, timeToShowMole);
+        // Show the mole later again
+    }
+
+    function showMole() {
+        // Find the target div randomly and move the mole
+        // to that div
+        // Show the mole
+        let index = Math.floor(Math.random()* $(".hole").length);
+        let div = $(".hole").eq(index);
+        $("#mole").appendTo(div);
+        $("#mole").show();
+        hideMoleTimeout = setTimeout(function(){
+                    hideMole();
+                },timeToHideMole);
+        // Hide the mole later
+    }
+
+    function startGame() {
+        // Hide the countdown timer
+        $("#countdown").fadeOut();
+        // Show the mole the first time
+        setTimeout(showMole, 2000);
+        // Set up the click handler of the mole
+        // - Clear the previous timeout
+        // - Hide the mole
+        // - Adjust the mole time
+        // - Show the mole later again
+        $("#mole").on("click", function(){
+            let m = $("#mole");
+            if(m.css("display") != "none") {
+                m.hide();
+                clearTimeout(hideMoleTimeout);
+                if(timeToHideMole > 1000){
+                    timeToShowMole -= 100;
+                    timeToHideMole -= 100;}
+                setTimeout(function(){
+                    showMole();
+                },timeToShowMole);
+            }
+        })
+    }
+
+    function countdown() {
+        // Decrease the remaining time
+        // Continue the countdown if there is still time;
+        document.getElementById("countdown").innerHTML = timeRemaining;
+        if(timeRemaining > 0){
+            timeRemaining = timeRemaining - 1;
+            setTimeout(countdown,1000);
+        }
+        else{
+            document.getElementById("countdown").innerHTML = "Start";
+            setTimeout(startGame,1000);
+        }
+        // otherwise, start the game when the time is up
+    }
+
+    $(function() {
+        // Start the countdown screen
+        countdown();
+        });
+    </script>
+
+    <!-- This is the font returned from Google font -->
+    <link href="https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&display=swap" rel="stylesheet">
+
+    <style>
+    /* This is the style of the body element */
+    body {
+        font-family: 'Gloria Hallelujah', cursive;
+        margin: 0;
+        padding: 0;
+        background: white url(grass.png);
+        background-size: 25% auto;
+    }
+
+    /* Set the common style for the countdown and gameover divs */
+    #countdown, #gameover {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        padding: 0;
+        text-align: center;
+        font-size: 20vh;
+        line-height: 100vh;
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    /* - Set the properties for the countdown div */
+    #countdown {
+        color: yellow;
+    }
+
+    /* - Set the properties for the gameover div */
+    #gameover {
+        color: red;
+        display: none;
+    }
+
+    /* Set the style of the game area */
+    #game-area {
+        width: 90vmin;
+        height: 90vmin;
+        margin: 5vmin auto;
+    }
+
+    /* - Set the style of the holes */
+    .hole { 
+        display: grid;
+        float: left;
+        width: 20vmin;
+        height: 20vmin;
+        border: 2vmin solid green;
+        border-radius: 90px;
+        background-color: black;
+        margin: 3vmin;
+    }
+
+    /* - Set the style of the mole image */
+    #mole {
+        width: 70%;
+        height: 70% ; 
+        border-radius: 50%;
+        place-self: center;
+        display: none;
+    }
+    </style>
+</head>
+<body>
+    <!-- This div contains all holes -->
+    <div id="game-area">
+        <div class="hole">
+            <!-- This is the mole -->
+            <img id="mole" src="mole.png" alt="The mole">
+        </div>
+        <div class="hole"></div>
+        <div class="hole"></div>
+        <div class="hole"></div>
+        <div class="hole"></div>
+        <div class="hole"></div>
+        <div class="hole"></div>
+        <div class="hole"></div>
+        <div class="hole"></div>
+    </div>
+
+    <!-- The countdown screen -->
+    <div id="countdown">3</div>
+    
+    <!-- The gameover screen -->
+    <div id="gameover">Game Over</div>
+</body>
+</html>
